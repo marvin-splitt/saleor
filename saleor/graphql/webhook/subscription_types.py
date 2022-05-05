@@ -38,6 +38,34 @@ TRANSLATIONS_TYPES_MAP = {
 }
 
 
+class AppBase(AbstractType):
+    app = graphene.Field(
+        "saleor.graphql.app.types.App",
+        description="Look up a app." + ADDED_IN_34 + PREVIEW_FEATURE,
+    )
+
+    @staticmethod
+    def resolve_app(root, _info):
+        _, app = root
+        return app
+
+
+class AppCreated(ObjectType, AppBase):
+    ...
+
+
+class AppUpdated(ObjectType, AppBase):
+    ...
+
+
+class AppDeleted(ObjectType, AppBase):
+    ...
+
+
+class AppStatusChanged(ObjectType, AppBase):
+    ...
+
+
 class CategoryBase(AbstractType):
     category = graphene.Field(
         "saleor.graphql.product.types.Category",
@@ -570,6 +598,10 @@ class TranslationUpdated(ObjectType, TranslationBase):
 class Event(Union):
     class Meta:
         types = (
+            AppCreated,
+            AppUpdated,
+            AppDeleted,
+            AppStatusChanged,
             CategoryCreated,
             CategoryUpdated,
             CategoryDeleted,
@@ -630,6 +662,10 @@ class Event(Union):
     @classmethod
     def get_type(cls, object_type: str):
         types = {
+            WebhookEventAsyncType.APP_CREATED: AppCreated,
+            WebhookEventAsyncType.APP_UPDATED: AppUpdated,
+            WebhookEventAsyncType.APP_DELETED: AppDeleted,
+            WebhookEventAsyncType.APP_STATUS_CHANGED: AppStatusChanged,
             WebhookEventAsyncType.CATEGORY_CREATED: CategoryCreated,
             WebhookEventAsyncType.CATEGORY_UPDATED: CategoryUpdated,
             WebhookEventAsyncType.CATEGORY_DELETED: CategoryDeleted,
